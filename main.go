@@ -1,11 +1,13 @@
 package main
 
 import (
-	"database/sql"
 	"github.com/gin-gonic/gin"
-	"github.com/go-sql-driver/mysql"
+	mysqld "github.com/go-sql-driver/mysql"
 	"gokanban/internal/api/project"
+	"gokanban/internal/api/task"
 	q "gokanban/internal/db"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -16,7 +18,9 @@ type ProjectListResponse struct {
 func main() {
 	//router := chi.NewMux()
 	//api := humachi.New(router, huma.DefaultConfig("GoKanban", "0.0.1"))
-	db, err := getDb()
+	dbg, err := GetDb()
+	db, err := dbg.DB()
+	defer db.Close()
 	db.SetMaxOpenConns(50)
 	db.SetConnMaxLifetime(time.Hour)
 	db.SetMaxIdleConns(50)
@@ -40,17 +44,23 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	//pprof.Register(r)
-	r.GET("/api/project", project.IndexHandler(queries))
+	r.GET("/api/project", project.IndexHandler(queries, dbg))
+	r.GET("/api/project/:slug/task", task.Index(dbg, queries))
+	r.GET("/api/project/:slug", project.Show(dbg))
 	r.Run("0.0.0.0:8888")
 }
 
-func getDb() (*sql.DB, error) {
-	cfg := mysql.Config{
+func GetDbDSN() string {
+	config := mysqld.Config{
 		User:   "dev",
 		Passwd: "dev",
 		Net:    "tcp",
 		Addr:   "127.0.0.1:33060",
 		DBName: "dev",
 	}
-	return sql.Open("mysql", cfg.FormatDSN())
+	return config.FormatDSN()
+}
+
+func GetDb() (*gorm.DB, error) {
+	return gorm.Open(mysql.Open(GetDbDSN() + "&parseTime=True"))
 }

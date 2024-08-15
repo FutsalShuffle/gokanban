@@ -5,7 +5,7 @@ import "gokanban/internal/domain/models"
 type FlowInterface interface {
 	name() string
 	slug() string
-	PossibleTaskNextStages(task models.Task, user models.User, project models.Project) []int32
+	PossibleTaskNextStages(task *models.Task, user *models.User, project *models.Project) []int32
 	PossibleProjectStages() []int32
 }
 
@@ -24,7 +24,7 @@ func (f *StandardFlow) slug() string {
 	return "standard"
 }
 
-func (f *StandardFlow) PossibleTaskNextStages(task models.Task, user models.User, project models.Project) []int32 {
+func (f *StandardFlow) PossibleTaskNextStages(task *models.Task, user *models.User, project *models.Project) []int32 {
 	var res []int32
 	stageId := task.StageId
 

@@ -17,7 +17,7 @@ func (f *EmploymentSearch) slug() string {
 	return "employment_search"
 }
 
-func (f *EmploymentSearch) PossibleTaskNextStages(task models.Task, user models.User, project models.Project) []int32 {
+func (f *EmploymentSearch) PossibleTaskNextStages(task *models.Task, user *models.User, project *models.Project) []int32 {
 	var res []int32
 	stageId := task.StageId
 

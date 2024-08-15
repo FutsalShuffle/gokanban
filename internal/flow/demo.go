@@ -17,7 +17,7 @@ func (f *DemoFlow) slug() string {
 	return "demo"
 }
 
-func (f *DemoFlow) PossibleTaskNextStages(task models.Task, user models.User, project models.Project) []int32 {
+func (f *DemoFlow) PossibleTaskNextStages(task *models.Task, user *models.User, project *models.Project) []int32 {
 	var res []int32
 	stageId := task.StageId
 
